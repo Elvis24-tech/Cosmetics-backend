@@ -21,13 +21,19 @@ class OrderViewSet(viewsets.ModelViewSet):
 def initiate_payment(request):
     phone = request.data.get('phone')
     amount = request.data.get('amount')
-    response = lipa_na_mpesa("254745805917", amount=10)
-    return Response(response)
+
+    if not phone or not amount:
+        return Response({'error': 'Phone and amount are required.'}, status=400)
+
+    try:
+        response = lipa_na_mpesa(phone, amount)
+        return Response(response)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
 
 
 @csrf_exempt
 @api_view(['POST'])
 def mpesa_callback(request):
-    print("M-Pesa Callback received:")
-    print(request.data)
+    print("M-Pesa Callback received:", request.data)
     return Response({"message": "Callback received"}, status=200)

@@ -34,7 +34,7 @@ def lipa_na_mpesa(phone, amount):
         "PartyA": phone,
         "PartyB": shortcode,
         "PhoneNumber": phone,
-        "CallBackURL": "https://yourdomain.com/api/mpesa/callback",  # Replace with actual
+        "CallBackURL": "https://yourdomain.com/api/mpesa/callback", 
         "AccountReference": "BeautyShop",
         "TransactionDesc": "Order payment"
     }
