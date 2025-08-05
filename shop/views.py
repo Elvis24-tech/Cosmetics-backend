@@ -14,8 +14,6 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-
-        # Remove the product from all orders
         orders = Order.objects.filter(products=instance)
         for order in orders:
             order.products.remove(instance)
