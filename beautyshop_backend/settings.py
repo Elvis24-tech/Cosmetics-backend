@@ -1,28 +1,43 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv # Import dotenv
 
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = 'your-secret-key'  
+# Load environment variables from .env file
+load_dotenv()
 
-DEBUG = True
+# --- SECURITY SETTINGS ---
+# Get the secret key from the environment variable
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-ALLOWED_HOSTS = []
+# --- CORRECTED DEBUG LOGIC ---
+# This will default to True if DEBUG is not in your .env file.
+# It will only be False if you explicitly set DEBUG=False in your environment.
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
+
+# --- CORRECTED ALLOWED_HOSTS ---
+# Add localhost and 127.0.0.1 so you can run the server locally
+# even if you decide to test with DEBUG=False.
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+
+# --- APPLICATION DEFINITION ---
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'cloudinary_storage',
     'django.contrib.staticfiles',
-
-    'corsheaders',               
+    'cloudinary',
+    'corsheaders',
     'rest_framework',
-    'drf_yasg',   
-
-
-    'shop',                     
+    'drf_yasg',
+    'shop',
 ]
 
 MIDDLEWARE = [
@@ -41,7 +56,7 @@ ROOT_URLCONF = 'beautyshop_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -55,6 +70,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'beautyshop_backend.wsgi.application'
+
+# --- DATABASE ---
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -62,6 +79,7 @@ DATABASES = {
     }
 }
 
+# --- PASSWORD VALIDATION ---
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -69,39 +87,33 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# --- INTERNATIONALIZATION ---
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Africa/Nairobi'
 USE_I18N = True
 USE_TZ = True
 
+
+# --- STATIC & MEDIA FILES (Cloudinary Integration) ---
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.environ.get('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET'),
+}
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  
-]
 
-CORS_ALLOW_METHODS = [
-    "DELETE",
-    "GET",
-    "OPTIONS",
-    "PATCH",
-    "POST",
-    "PUT",
-]
-
-CORS_ALLOW_HEADERS = [
-    "accept",
-    "accept-encoding",
-    "authorization",
-    "content-type",
-    "dnt",
-    "origin",
-    "user-agent",
-    "x-csrftoken",
-    "x-requested-with",
-]
+# --- THIRD-PARTY APP SETTINGS ---
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
+CORS_ALLOW_METHODS = ["DELETE", "GET", "OPTIONS", "PATCH", "POST", "PUT"]
+CORS_ALLOW_HEADERS = ["accept", "authorization", "content-type", "origin", "user-agent", "x-csrftoken", "x-requested-with"]
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
